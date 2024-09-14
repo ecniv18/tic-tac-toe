@@ -1,12 +1,25 @@
+//  PLAYER FACTORY
+function player(name, marker) {
+  const getName = () => name;
+  const getMarker = () => marker;
+
+  return { getName, getMarker };
+}
+
 // GAMEBOARD IIFE
 const gameBoard = ((playerOne, playerTwo) => {
   let winner = "";
+  let playerTurn = playerOne.getMarker();
   const gameboardBoxes = [
     [box("00"), box("01"), box("02")],
     [box("10"), box("11"), box("12")],
     [box("20"), box("21"), box("22")],
   ];
 
+  const getWinner = () => winner;
+  const getGameboardBoxes = () => gameboardBoxes;
+
+  // public
   function getBox(position) {
     let box;
     for (let i = 0; i < gameboardBoxes.length; i++) {
@@ -20,6 +33,7 @@ const gameBoard = ((playerOne, playerTwo) => {
     return box;
   }
 
+  // private
   function box(position) {
     const getPosition = () => position;
     let marker = "";
@@ -45,6 +59,7 @@ const gameBoard = ((playerOne, playerTwo) => {
   //   [box("10"), box("11"), box("12")],
   //   [box("20"), box("21"), box("22")],
 
+  // public
   function evaluate() {
     if (
       (gameboardBoxes[0][0].getMarker() === "O" &&
@@ -55,7 +70,7 @@ const gameBoard = ((playerOne, playerTwo) => {
         gameboardBoxes[2][0].getMarker() === "O") ||
       (gameboardBoxes[0][1].getMarker() === "O" &&
         gameboardBoxes[1][1].getMarker() === "O" &&
-        gameboardBoxes[2][2].getMarker() === "O") ||
+        gameboardBoxes[2][1].getMarker() === "O") ||
       (gameboardBoxes[0][2].getMarker() === "O" &&
         gameboardBoxes[1][2].getMarker() === "O" &&
         gameboardBoxes[2][2].getMarker() === "O") ||
@@ -64,9 +79,17 @@ const gameBoard = ((playerOne, playerTwo) => {
         gameboardBoxes[2][2].getMarker() === "O") ||
       (gameboardBoxes[0][2].getMarker() === "O" &&
         gameboardBoxes[1][1].getMarker() === "O" &&
-        gameboardBoxes[2][0].getMarker() === "O")
+        gameboardBoxes[2][0].getMarker() === "O") ||
+      (gameboardBoxes[1][0].getMarker() === "O" &&
+        gameboardBoxes[1][1].getMarker() === "O" &&
+        gameboardBoxes[1][2].getMarker() === "O") ||
+      (gameboardBoxes[2][0].getMarker() === "O" &&
+        gameboardBoxes[2][1].getMarker() === "O" &&
+        gameboardBoxes[2][2].getMarker() === "O")
     ) {
       winner = playerOne.getName();
+      alert(`${winner} wins`);
+      gameReset();
     } else if (
       (gameboardBoxes[0][0].getMarker() === "X" &&
         gameboardBoxes[0][1].getMarker() === "X" &&
@@ -76,7 +99,7 @@ const gameBoard = ((playerOne, playerTwo) => {
         gameboardBoxes[2][0].getMarker() === "X") ||
       (gameboardBoxes[0][1].getMarker() === "X" &&
         gameboardBoxes[1][1].getMarker() === "X" &&
-        gameboardBoxes[2][2].getMarker() === "X") ||
+        gameboardBoxes[2][1].getMarker() === "X") ||
       (gameboardBoxes[0][2].getMarker() === "X" &&
         gameboardBoxes[1][2].getMarker() === "X" &&
         gameboardBoxes[2][2].getMarker() === "X") ||
@@ -85,23 +108,76 @@ const gameBoard = ((playerOne, playerTwo) => {
         gameboardBoxes[2][2].getMarker() === "X") ||
       (gameboardBoxes[0][2].getMarker() === "X" &&
         gameboardBoxes[1][1].getMarker() === "X" &&
-        gameboardBoxes[2][0].getMarker() === "X")
+        gameboardBoxes[2][0].getMarker() === "X") ||
+      (gameboardBoxes[1][0].getMarker() === "X" &&
+        gameboardBoxes[1][1].getMarker() === "X" &&
+        gameboardBoxes[1][2].getMarker() === "X") ||
+      (gameboardBoxes[2][0].getMarker() === "X" &&
+        gameboardBoxes[2][1].getMarker() === "X" &&
+        gameboardBoxes[2][2].getMarker() === "X")
     ) {
       winner = playerTwo.getName();
+      alert(`${winner} wins!`);
+      gameReset();
     }
   }
 
-  // EXAMPLE:
-  // getBox("20").markBox(playerTwo.getMarker()); => marked the box at the position "20" with playerTwo's marker "X"
-  // getBox("11").markBox(playerTwo.getMarker()); => ^ position "11"
-  // getBox("02").markBox(playerTwo.getMarker()); => ^ position "02"
-  // evaluate(); => since boxes at the positions "20", "11", and "02" completed a winning line [at ln:86] this function sets the winner variable to playerTwo's name "Player Two"
+  // public
+  function displayBoxes(containerSelector) {
+    const container = document.querySelector(containerSelector);
+    gameboardBoxes.forEach((boxRow) => {
+      boxRow.forEach((box) => container.appendChild(createBoxElement(box)));
+    });
+  }
+
+  // private
+  function createBoxElement(box) {
+    const div = document.createElement("div");
+    div.classList = "box";
+    div.dataset.position = box.getPosition();
+    return div;
+  }
+
+  function gameStart() {
+    const boxesElement = document.querySelectorAll(".box");
+    boxesElement.forEach((box) => {
+      box.addEventListener("click", () => {
+        gameboardBoxes.forEach((row) => {
+          row.forEach((gameBoardBox) => {
+            if (box.dataset.position === gameBoardBox.getPosition()) {
+              if (gameBoardBox.getMarker() !== "") return;
+              if (playerTurn === playerOne.getMarker()) {
+                gameBoardBox.markBox(playerOne.getMarker());
+                box.innerText = playerOne.getMarker();
+                playerTurn = playerTwo.getMarker();
+              } else if (playerTurn === playerTwo.getMarker()) {
+                gameBoardBox.markBox(playerTwo.getMarker());
+                box.innerText = playerTwo.getMarker();
+                playerTurn = playerOne.getMarker();
+              }
+              evaluate();
+              console.log(gameBoardBox.getMarker());
+            }
+          });
+        });
+      });
+    });
+  }
+
+  // private
+  function gameReset() {
+    const boxesElement = document.querySelectorAll(".box");
+    boxesElement.forEach((box) => {
+      box.innerText = "";
+    });
+    gameboardBoxes.forEach((row) => row.forEach((box) => box.resetMarker()));
+    playerTurn = playerOne.getMarker();
+    winner = "";
+  }
+
+  return { evaluate, getWinner, getGameboardBoxes, displayBoxes, gameStart };
 })(player("Player One", "O"), player("Player Two", "X"));
 
-//  PLAYER FACTORY
-function player(name, marker) {
-  const getName = () => name;
-  const getMarker = () => marker;
-
-  return { getName, getMarker };
-}
+// INIT
+gameBoard.displayBoxes(".board");
+gameBoard.gameStart();
