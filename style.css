@@ -1,0 +1,29 @@
+.wrapper {
+  max-width: 768px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.board {
+  --box-size: 100px;
+  display: grid;
+  grid-template-columns: repeat(3, var(--box-size));
+  grid-template-rows: repeat(3, var(--box-size));
+  gap: 1rem;
+  background-color: #90979e;
+  padding: 1rem;
+  border-radius: 10px;
+}
+.box {
+  border: 1px solid #111731;
+  background-color: #eee;
+  text-align: center;
+  padding-top: 20%;
+  font-size: 3rem;
+}
+
+.box:hover {
+  background-color: #eeeeee81;
+}
