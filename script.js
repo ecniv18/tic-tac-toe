@@ -52,7 +52,9 @@ const gameBoard = ((playerOne, playerTwo) => {
 
     const getMarker = () => marker;
 
-    return { markBox, getPosition, resetMarker, getMarker };
+    const isMarked = () => marked;
+
+    return { markBox, getPosition, resetMarker, getMarker, isMarked };
   }
 
   //   [box("00"), box("01"), box("02")],
@@ -61,6 +63,17 @@ const gameBoard = ((playerOne, playerTwo) => {
 
   // public
   function evaluate() {
+    let markedBoxCounter = 0;
+    gameboardBoxes.forEach(row => {
+      row.forEach(box => {
+        if(box.isMarked()) markedBoxCounter++;
+      })
+    })
+
+    if(markedBoxCounter === 9) {
+      alert('draw');
+      gameReset()
+    }
     if (
       (gameboardBoxes[0][0].getMarker() === "O" &&
         gameboardBoxes[0][1].getMarker() === "O" &&
@@ -119,7 +132,7 @@ const gameBoard = ((playerOne, playerTwo) => {
       winner = playerTwo.getName();
       alert(`${winner} wins!`);
       gameReset();
-    }
+    } 
   }
 
   // public
