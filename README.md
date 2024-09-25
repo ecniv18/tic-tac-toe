@@ -7,3 +7,5 @@ using:
 - IIFE
 - FACTORY FUNCTION
 - CLOSURES
+
+Live Preview: [Tic-tac-toe](https://ecniv18.github.io/tic-tac-toe/)
